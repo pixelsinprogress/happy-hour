@@ -14,8 +14,20 @@ var config = {
 };
 
 firebase.initializeApp(config);
+var database = firebase.database();
 
-
+let data = [
+  {
+    name: 'Nitin',
+    address: 'Baltimore',
+    coordinates: [-76.612189, 39.290385]
+  },
+  {
+    name: 'Ert',
+    address: 'London',
+    coordinates: [-0.127758,51.507351]
+  }
+];
 
 const Map = ReactMapboxGl({
   accessToken: "pk.eyJ1Ijoibml0aW45MyIsImEiOiJjaXpkam5jZTIyYmM2MndvOHZrN2d0bXBvIn0.zZL24G9KtqbOv7d9m775xQ"
@@ -27,17 +39,22 @@ class App extends Component {
     this.state = {
       message: null,
       fetching: true,
-      location: "Baltimore"
+      location: "Baltimore",
+      data: []
     };
+
   }
 
+
+
   componentDidMount() {
-    const rootRef = firebase.database().ref().child('react');
-    const locationRef = rootRef.child('location');
-    locationRef.on('value', snap => {
+    const rootRef = database.ref().child('data');
+    //const locationRef = rootRef.child('location');
+    rootRef.on('value', snap => {
       this.setState({
-        location: snap.val()
+        data: snap.val()
       })
+
     });
 
     /*
@@ -67,15 +84,22 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to {this.state.location}</h2>
+          {this.state.data.map((bar, index) => (
+            <p key={index}>{bar.name}</p>
+          ))}
         </div>
         <Map
           style="mapbox://styles/mapbox/streets-v9"
-          center= {[-76.6122, 39.2904]}
           containerStyle={{
             height: "100vh",
             width: "100vw"
           }}>
+          <Layer
+            type="symbol"
+            id="marker"
+            layout={{ "icon-image": "marker-15" }}>
+            <Feature coordinates={[-0.481747846041145, 51.3233379650232]}/>
+          </Layer>
         </Map>
       </div>
     );
