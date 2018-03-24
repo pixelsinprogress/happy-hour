@@ -33,21 +33,19 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const rootRef = firebase.database().ref().child('bar');
-    rootRef.on('value', snap => {
+    const barsRef = firebase.database().ref().child('bars');
+    barsRef.on('value', snap => {
       this.setState({
-        data: snap.val()
+        bars: snap.val()
       })
     });
 
-    const coordsRef = rootRef.child('coordinates');
-    console.log(coordsRef)
+    const coordsRef = firebase.database().ref().child('coordinates');
     coordsRef.on('value', snap => {
       this.setState({
         coords: snap.val()
       })
     });
-
 
     /*
     fetch('/api')
@@ -76,28 +74,28 @@ class App extends Component {
   // ))}
 
   render() {
-    console.log(this.state.data.coordinates)
-    this.state.data.coordinates ? console.log(this.state.data.name) : console.log("hello")
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>{this.state.data.name}</p>
-          <p>{this.state.data.name}</p>
-
-        </div>
         <Map
+          center= {[-76.5936, 39.2842]}
+          zoom={[15]}
           style="mapbox://styles/mapbox/streets-v9"
           containerStyle={{
             height: "100vh",
             width: "100vw"
+
           }}>
+          {this.state.coords ?
             <Layer
               type="symbol"
               id="marker"
               layout={{ "icon-image": "harbor-15" }}>
-              <Feature coordinates={[51.3233379650232, -0.481747846041145]}/>
+              <Feature coordinates={[
+                this.state.coords.beerbar.latitude,
+                this.state.coords.beerbar.longitude
+              ]}/>
             </Layer>
+          : console.log("no") }
         </Map>
       </div>
     );
