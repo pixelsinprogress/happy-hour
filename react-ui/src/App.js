@@ -74,8 +74,19 @@ class App extends Component {
   // ))}
 
   render() {
+    {this.state.coords ?
+    Object.keys(this.state.coords).map(function(keyName, keyIndex) {
+      console.log(keyName)
+      // use keyName to get current key's name
+      // and a[keyName] to get its value
+    }) :
+    console.log('no')}
     return (
       <div className="App">
+        <div className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+
+        </div>
         <Map
           center= {[-76.5936, 39.2842]}
           zoom={[15]}
