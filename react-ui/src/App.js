@@ -76,7 +76,9 @@ class App extends Component {
   render() {
     {this.state.coords ?
     Object.keys(this.state.coords).map(function(keyName, keyIndex) {
-      console.log(keyName)
+      console.log(typeof keyName)
+      console.log(typeof keyIndex)
+      console.log(keyIndex)
       // use keyName to get current key's name
       // and a[keyName] to get its value
     }) :
@@ -97,15 +99,22 @@ class App extends Component {
 
           }}>
           {this.state.coords ?
-            <Layer
-              type="symbol"
-              id="marker"
-              layout={{ "icon-image": "harbor-15" }}>
-              <Feature coordinates={[
-                this.state.coords.beerbar.latitude,
-                this.state.coords.beerbar.longitude
-              ]}/>
-            </Layer>
+            Object.keys(this.state.coords).map(function(keyName, keyIndex) {
+              console.log(keyIndex)
+              // use keyName to get current key's name
+              // and a[keyName] to get its value
+              console.log('yes')
+              {<Layer
+                type="symbol"
+                id="marker"
+                layout={{ "icon-image": "harbor-15" }}>
+                <Feature
+                  coordinates={[
+                    this.state.coords.beerbar.latitude,
+                    this.state.coords.beerbar.longitude
+                ]}/>
+              </Layer>
+            })
           : console.log("no") }
         </Map>
       </div>
