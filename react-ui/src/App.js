@@ -29,6 +29,7 @@ class App extends Component {
       location: "Baltimore",
       data: []
     };
+    this.clickedFeature = this.clickedFeature.bind(this);
 
   }
 
@@ -73,22 +74,22 @@ class App extends Component {
   //   <p key={index}>{bar.name}</p>
   // ))}
 
+  clickedFeature() {
+    console.log("clicked");
+  }
+
   render() {
-    {this.state.coords ?
-    Object.keys(this.state.coords).map(function(keyName, keyIndex) {
-      console.log(typeof keyName)
-      console.log(typeof keyIndex)
-      console.log(keyIndex)
-      // use keyName to get current key's name
-      // and a[keyName] to get its value
-    }) :
-    console.log('no')}
+    let coordsVar
+    {this.state.coords ? coordsVar = Object.values(this.state.coords) : console.log('bye')}
+    console.log(typeof coordsVar)
+    console.log(coordsVar)
+
     return (
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-
         </div>
+
         <Map
           center= {[-76.5936, 39.2842]}
           zoom={[15]}
@@ -98,24 +99,16 @@ class App extends Component {
             width: "100vw"
 
           }}>
-          {this.state.coords ?
-            Object.keys(this.state.coords).map(function(keyName, keyIndex) {
-              console.log(keyIndex)
-              // use keyName to get current key's name
-              // and a[keyName] to get its value
-              console.log('yes')
-              {<Layer
+            <Layer
                 type="symbol"
                 id="marker"
                 layout={{ "icon-image": "harbor-15" }}>
-                <Feature
-                  coordinates={[
-                    this.state.coords.beerbar.latitude,
-                    this.state.coords.beerbar.longitude
-                ]}/>
+                {coordsVar ?
+                  coordsVar.map((coord, index) =>
+                    <Feature onClick={this.clickedFeature} key={index} coordinates={Object.values(coord)}/>
+                  ) :
+                  console.log('undefined')}
               </Layer>
-            })
-          : console.log("no") }
         </Map>
       </div>
     );
