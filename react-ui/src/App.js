@@ -75,7 +75,7 @@ class App extends Component {
   // ))}
 
   clickedFeature() {
-    console.log("clicked");
+    console.log("cked");
   }
 
   render() {
