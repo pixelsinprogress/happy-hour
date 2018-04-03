@@ -29,7 +29,7 @@ class App extends Component {
       location: "Baltimore",
       data: []
     };
-    this.clickedFeature = this.clickedFeature.bind(this);
+    //this.clickedFeature = this.clickedFeature.bind(this);
 
   }
 
@@ -74,15 +74,19 @@ class App extends Component {
   //   <p key={index}>{bar.name}</p>
   // ))}
 
-  clickedFeature() {
-    console.log("cked");
+  clickedFeature(props) {
+    console.log(props);
+  }
+
+  displayBars() {
+    return this.state.coords ?
+      Object.values(this.state.coords).map((coord, index) =>
+        <Feature name={Object.keys(this.state.coords)[index]} onClick={this.clickedFeature} key={index} coordinates={Object.values(coord)}/>
+      ) :
+      console.log('undefined')
   }
 
   render() {
-    let coordsVar
-    {this.state.coords ? coordsVar = Object.values(this.state.coords) : console.log('bye')}
-    console.log(typeof coordsVar)
-    console.log(coordsVar)
 
     return (
       <div className="App">
@@ -97,18 +101,13 @@ class App extends Component {
           containerStyle={{
             height: "100vh",
             width: "100vw"
-
           }}>
             <Layer
-                type="symbol"
-                id="marker"
-                layout={{ "icon-image": "harbor-15" }}>
-                {coordsVar ?
-                  coordsVar.map((coord, index) =>
-                    <Feature onClick={this.clickedFeature} key={index} coordinates={Object.values(coord)}/>
-                  ) :
-                  console.log('undefined')}
-              </Layer>
+              type="symbol"
+              id="marker"
+              layout={{ "icon-image": "harbor-15" }}>
+              {this.displayBars()}
+            </Layer>
         </Map>
       </div>
     );
