@@ -29,7 +29,7 @@ class App extends Component {
       location: "Baltimore",
       data: []
     };
-    //this.clickedFeature = this.clickedFeature.bind(this);
+    this.clickedFeature = this.clickedFeature.bind(this);
 
   }
 
@@ -79,10 +79,12 @@ class App extends Component {
   }
 
   displayBars() {
+    console.log(this.state.coords)
     return this.state.coords ?
-      Object.values(this.state.coords).map((coord, index) =>
-        <Feature name={Object.keys(this.state.coords)[index]} onClick={this.clickedFeature} key={index} coordinates={Object.values(coord)}/>
-      ) :
+      Object.values(this.state.coords).map((coord, index) => {
+        const name = Object.keys(this.state.coords)[index]
+        return <Feature name={name} onClick={() => this.clickedFeature(name)} key={index} coordinates={Object.values(coord)}/>
+      }) :
       console.log('undefined')
   }
 
