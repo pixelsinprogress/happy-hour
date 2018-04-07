@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import * as firebase from 'firebase';
 import ReactMapboxGl, { Layer, Feature } from "react-mapbox-gl";
+import { Dialog } from './Dialog';
 
 var config = {
     apiKey: "AIzaSyAnLoOrNYLClAbK7xrA7JnFxZtycHA7_Fk",
@@ -27,6 +28,7 @@ class App extends Component {
       message: null,
       fetching: true,
       location: "Baltimore",
+      currentMapCoordinates: [-76.5936, 39.2812],
       data: []
     };
     this.clickedFeature = this.clickedFeature.bind(this);
@@ -47,6 +49,10 @@ class App extends Component {
         coords: snap.val()
       })
     });
+
+    let day = new Date().getDay()
+    let hour = new Date().getHours()
+    console.log(day + " " + hour)
 
     /*
     fetch('/api')
@@ -74,8 +80,17 @@ class App extends Component {
   //   <p key={index}>{bar.name}</p>
   // ))}
 
-  clickedFeature(props) {
-    console.log(props);
+  clickedFeature(index) {
+    let selectedBarName = Object.values(this.state.bars)[index].name;
+    let selectedBarPhone = Object.values(this.state.bars)[index].phone;
+    let selectedBarCoordinates = Object.values(Object.values(this.state.coords)[index])
+    this.setState({
+      selectedBarName: selectedBarName,
+      selectedBarPhone: selectedBarPhone,
+      currentMapCoordinates: selectedBarCoordinates
+    })
+    //Set currentMapCoordinates in state to selectedBar's coordinates
+
   }
 
   displayBars() {
@@ -83,7 +98,7 @@ class App extends Component {
     return this.state.coords ?
       Object.values(this.state.coords).map((coord, index) => {
         const name = Object.keys(this.state.coords)[index]
-        return <Feature name={name} onClick={() => this.clickedFeature(name)} key={index} coordinates={Object.values(coord)}/>
+        return <Feature name={name} onClick={() => this.clickedFeature(index)} key={index} coordinates={Object.values(coord)}/>
       }) :
       console.log('undefined')
   }
@@ -92,12 +107,9 @@ class App extends Component {
 
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-        </div>
-
+        {this.state.selectedBarName ? <Dialog barName={this.state.selectedBarName} barPhone={this.state.selectedBarPhone}/> : console.log("undefined")}
         <Map
-          center= {[-76.5936, 39.2842]}
+          center= {this.state.currentMapCoordinates}
           zoom={[15]}
           style="mapbox://styles/mapbox/streets-v9"
           containerStyle={{
