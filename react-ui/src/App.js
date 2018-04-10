@@ -64,17 +64,6 @@ class App extends Component {
       })
     });
 
-    //Should we push index's to a new array and loop through that array to create Layers with features
-    //
-    // Today @: happy hours whose start time is > current time
-    // Happening Now: happy hours whose start time < current time < end time
-    // Ending Soon: happy hours whose (end time - current time) == 1
-    // Tomorrow @: happy hours whose end time < current time
-
-    let day = new Date().getDay()
-    let hour = new Date().getHours()
-    console.log(day + " " + hour)
-
     /*
     fetch('/api')
       .then(response => {
@@ -97,9 +86,9 @@ class App extends Component {
     */
   }
 
-  findTypes() {
+  findBars(allLayers) {
     let hour = new Date().getHours();
-    return this.state.schedule ?
+    this.state.schedule ?
       Object.values(this.state.schedule).map((bar, index) => {
         const startTime = (Object.values(this.state.schedule)[index].start) + 12
         const endTime = (Object.values(this.state.schedule)[index].end) + 12
@@ -112,26 +101,51 @@ class App extends Component {
         // Ending Soon: happy hours whose (end time - current time) == 1
         // Tomorrow @: happy hours whose end time < current time
 
-        // push each type of happy hour into a new array in state
-        // Write a displayBars for each type of happy hour
-          //one that loops through each array using the stored value as the index to go to in the coords and sched in state
-
         if (hour < startTime) {
           console.log("Today @ " + startTime)
+          allLayers[0].push(index)
+
         } else if ((endTime - hour) == 1) {
-          console.log("Happening Now")
+          console.log("Ending Soon")
+          allLayers[1].push(index)
+
         } else if (hour > startTime && hour < endTime) {
           console.log("Happening Now")
+          allLayers[2].push(index)
+
         } else {
           console.log("Tomorrow @")
+          allLayers[3].push(index)
+
         }
       }) :
       console.log('undefined')
+      return allLayers
   }
 
-  // {this.state.data.map((bar, index) => (
-  //   <p key={index}>{bar.name}</p>
-  // ))}
+  displayLayers() {
+    let todayAt = [];
+    let happeningNow = [];
+    let endingSoon = [];
+    let tomorrowAt = [];
+    let allLayers = [todayAt, happeningNow, endingSoon, tomorrowAt]
+    this.findBars(allLayers)
+    console.log(allLayers)
+
+    let layers = allLayers.map(layer => {
+      return <Layer
+        type="symbol"
+        id="marker"
+        layout={{ "icon-image": "harbor-15" }}>
+        
+        </Layer>
+    });
+    console.log(layers)
+    // return a Layer for each array in allLayers
+    // where each Layer has as many Features as items in the array
+    // where each Feature has the coordinate value of the corresponding item to its index value in this.state.coords
+
+  }
 
   clickedFeature(index) {
     let selectedBarName = Object.values(this.state.bars)[index].name;
@@ -142,8 +156,6 @@ class App extends Component {
       selectedBarPhone: selectedBarPhone,
       currentMapCoordinates: selectedBarCoordinates
     })
-    //Set currentMapCoordinates in state to selectedBar's coordinates
-
   }
 
   displayBars() {
@@ -160,7 +172,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        {this.findTypes()}
+        {this.displayLayers()}
         {this.state.selectedBarName ? <Dialog barName={this.state.selectedBarName} barPhone={this.state.selectedBarPhone}/> : console.log("undefined")}
         <Map
           center= {this.state.currentMapCoordinates}
@@ -170,12 +182,7 @@ class App extends Component {
             height: "100vh",
             width: "100vw"
           }}>
-            <Layer
-              type="symbol"
-              id="marker"
-              layout={{ "icon-image": "harbor-15" }}>
-              {this.displayBars()}
-            </Layer>
+
         </Map>
       </div>
     );
