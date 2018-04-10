@@ -50,6 +50,27 @@ class App extends Component {
       })
     });
 
+    const schedRef = firebase.database().ref().child('schedule');
+    schedRef.on('value', snap => {
+      this.setState({
+        schedule: snap.val()
+      })
+    });
+
+    const specialsRef = firebase.database().ref().child('specials');
+    specialsRef.on('value', snap => {
+      this.setState({
+        specials: snap.val()
+      })
+    });
+
+    //Should we push index's to a new array and loop through that array to create Layers with features
+    //
+    // Today @: happy hours whose start time is > current time
+    // Happening Now: happy hours whose start time < current time < end time
+    // Ending Soon: happy hours whose (end time - current time) == 1
+    // Tomorrow @: happy hours whose end time < current time
+
     let day = new Date().getDay()
     let hour = new Date().getHours()
     console.log(day + " " + hour)
@@ -74,6 +95,38 @@ class App extends Component {
         });
       })
     */
+  }
+
+  findTypes() {
+    let hour = new Date().getHours();
+    return this.state.schedule ?
+      Object.values(this.state.schedule).map((bar, index) => {
+        const startTime = (Object.values(this.state.schedule)[index].start) + 12
+        const endTime = (Object.values(this.state.schedule)[index].end) + 12
+        console.log(startTime)
+        console.log(index)
+        console.log(hour)
+
+        // Today @: happy hours whose start time is > current time
+        // Happening Now: happy hours whose start time < current time < end time
+        // Ending Soon: happy hours whose (end time - current time) == 1
+        // Tomorrow @: happy hours whose end time < current time
+
+        // push each type of happy hour into a new array in state
+        // Write a displayBars for each type of happy hour
+          //one that loops through each array using the stored value as the index to go to in the coords and sched in state
+
+        if (hour < startTime) {
+          console.log("Today @ " + startTime)
+        } else if ((endTime - hour) == 1) {
+          console.log("Happening Now")
+        } else if (hour > startTime && hour < endTime) {
+          console.log("Happening Now")
+        } else {
+          console.log("Tomorrow @")
+        }
+      }) :
+      console.log('undefined')
   }
 
   // {this.state.data.map((bar, index) => (
@@ -107,6 +160,7 @@ class App extends Component {
 
     return (
       <div className="App">
+        {this.findTypes()}
         {this.state.selectedBarName ? <Dialog barName={this.state.selectedBarName} barPhone={this.state.selectedBarPhone}/> : console.log("undefined")}
         <Map
           center= {this.state.currentMapCoordinates}
