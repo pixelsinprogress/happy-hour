@@ -131,16 +131,33 @@ class App extends Component {
     let allLayers = [todayAt, happeningNow, endingSoon, tomorrowAt]
     this.findBars(allLayers)
     console.log(allLayers)
+    let mapLayers = []
 
-    let layers = allLayers.map(layer => {
-      return <Layer
+    allLayers.forEach((layer, index) => {
+      console.log(layer)
+      let mapFeatures = []
+      let mapLayer = <Layer
         type="symbol"
         id="marker"
+        key={index}
         layout={{ "icon-image": "harbor-15" }}>
-        
+          
+          {layer.forEach((feature, index) => {
+              let mapFeature = <Feature key={index} coordinates={[-76.5936, 39.2812]}/>
+              mapFeatures.push(mapFeature)
+              console.log(mapFeatures)
+            })}
         </Layer>
+
+      mapLayers.push(mapLayer);
+      console.log(mapLayers)
     });
-    console.log(layers)
+    console.log(mapLayers)
+    return mapLayers;
+    this.setState({
+      mapLayers: mapLayers
+    })
+    console.log(this.state.mapLayers)
     // return a Layer for each array in allLayers
     // where each Layer has as many Features as items in the array
     // where each Feature has the coordinate value of the corresponding item to its index value in this.state.coords
@@ -172,7 +189,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        {this.displayLayers()}
+
         {this.state.selectedBarName ? <Dialog barName={this.state.selectedBarName} barPhone={this.state.selectedBarPhone}/> : console.log("undefined")}
         <Map
           center= {this.state.currentMapCoordinates}
@@ -182,7 +199,7 @@ class App extends Component {
             height: "100vh",
             width: "100vw"
           }}>
-
+          {this.displayLayers()}
         </Map>
       </div>
     );
